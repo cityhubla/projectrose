@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Go Beyond Colorado!</title>
+	<meta charset="utf-8" />
+	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css' rel='stylesheet' />
+	<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+</head>
+<body>
+	<div id="map"></div>
+    <div id="info"><h1>Beyond Colorado</h1>
+    <div id="infobox"><h2>There's more to Pasadena</h2><p>See what has been and what is in the city of roses.</p></div>
+        <a href='#' id='geolocate' class='ui-button'>Find me</a>
+    </div>
+	<script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7QQMRafKPNBdmA';    
+        var map = L.mapbox.map('map', 'cruzin73vw.da0b9375','backtile')
+        .setView([34.147844, -118.144392], 14);        
+        
+        //URL to Markers
+        var landmarks="https://spreadsheets.google.com/feeds/list/1u2b7ROtyt3_47Ah48ejiG5ALz0Z0Zfvo4RfdfTzboHQ/1/public/values?alt=json";
+        var landmarkslayer = L.mapbox.featureLayer().addTo(map);
+        var info = document.getElementById('infobox');
+        
+        function getcolor(d) {
+            var d = String(d);
+            return d == 'Current' ? '#ff7f00' :
+                'blue';
+        }
+        
+        
+        $.getJSON(landmarks, function(data) {
+        $.each(data.feed.entry, function(i,result){
+        L.circleMarker([result.gsx$latitude.$t, result.gsx$longitude.$t], {
+                fillColor:getcolor(result.gsx$status.$t),
+                color: "#000",
+                weight: 0,
+                opacity: 0,
+                fillOpacity: 0.8
+        }).bindPopup('<img src="http://maps.googleapis.com/maps/api/streetview?size=265x150&location='+result.gsx$latitude.$t+','+result.gsx$longitude.$t+'&key=AIzaSyAEjGc0IbjncA-YzKrpiTBHRhELUrruHao">'+
+                     "<h2>"+result.gsx$name.$t+"<br>"+result.gsx$address.$t+"</h2><p>"+result.gsx$description.$t).addTo(landmarkslayer);
+        });
+        });
+        
+        
+        
+    landmarkslayer.on('click',function(e) {
+    info.innerHTML = e.layer._popup._content;
+    });
+        
+        var geolocation = L.mapbox.featureLayer().addTo(map);
+        
+        var mapbounds=map.getBounds();
+        console.log(mapbounds);
+        
+        var geolocate = document.getElementById('geolocate');
+        
+        if (!navigator.geolocation) {
+        geolocate.innerHTML = 'Geolocation is not available';
+        } else {
+        geolocate.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        map.locate();
+        };
+        }
+        map.on('locationfound', function(e) {
+            
+        if (mapbounds.contains([e.latlng.lng, e.latlng.lat])==true){
+        map.fitBounds(e.bounds);
+
+        geolocation.setGeoJSON({
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [e.latlng.lng, e.latlng.lat]
+        },
+        properties: {
+            'title': 'Here I am!',
+            'marker-color': '#ff8888',
+            'marker-symbol': 'star'
+        }
+        });
+
+        // And hide the geolocation button
+        geolocate.parentNode.removeChild(geolocate);
+        } else {alert("You must be in the City of Pasadena")}});
+
+        // If the user chooses not to allow their location
+        // to be shared, display an error message.
+        map.on('locationerror', function() {
+        geolocate.innerHTML = 'Position could not be found';
+        });
+
+	</script>
+</body>
+</html>
