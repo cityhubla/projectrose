@@ -6,17 +6,19 @@ body { margin: 0; padding: 0;}
 .leaflet-control{right:100%;}
 #info {
         font-family: Sans-Serif;
-    display:block;
+        display:block;
         position: relative;
         color: #FFF;
-        background: grey;
+        background: #566272;
         padding: 10px 25px 25px;
         width: 20%;
-    overflow:hidden;
+        overflow:hidden;
+    
 }
 
+
 .ui-button {
-  background:#3887BE;
+  background:#566272;
   color:#FFF;
   display:block;
   width:160px;
@@ -46,7 +48,7 @@ left:20px;
 	position: absolute;
     padding: 0px;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: #566272;
     overflow:scroll;
     
     }
