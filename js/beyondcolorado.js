@@ -12,13 +12,54 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
         var info = document.getElementById('infobox');
         var blvd ='data/coloradoblvd.geojson';
         var city ='data/cityboundary.geojson';
+        var pasaODH='http://cityofpasadenaca.pasgis.opendata.arcgis.com/datasets/9f855c1de8af4fac94010719308978f2_0.geojson'
+        var busroutes='http://cityofpasadenaca.pasgis.opendata.arcgis.com/datasets/242631d212c24bbfbd62e0138bfa1fa6_0.geojson';
         
-        function getcolor(d) {
+//Function to return fill color    
+function getcolor(d) {
             var d = String(d);
             return d == 'Current' ? '#DA8A29' :
                 '#F05B7A';
         }
-        
+//Function to return fill color    
+function getopacity(d) {
+            var d = String(d);
+            return d == 'Pasadena ARTS' ? 1 :
+                0;
+        }
+    
+//Adds Landmarks from Pasadena Open Data
+        $.getJSON(pasaODH, function(data) {
+        var pasa = L.geoJson(data, {
+                style:{
+                color: "#DA8A29",
+                fill: "#DA8A29",
+                fillOpacity:.5,
+                weight: 0,
+                },
+        onEachFeature: function (feature, layer) {
+        layer.bindPopup("<h2>"+feature.properties.PRC_CULT_HRTG_LANDMARK+"</h2>"+"<p>"+feature.properties.PRC_PRIMARY_SITEADDR+"</p>");
+        }    
+        }).addTo(map);
+        });
+    
+        $.getJSON(busroutes, function(data) {
+        console.log(data);    
+        var routesLayer = L.geoJson(data, {
+                style:{
+                color: "aqua",
+                weight: 2,
+                opacity:1,
+                filter: function(feature, layer) {
+                return feature.properties.AGENCY=="Pasadena ARTS";
+                console.log(feature);
+                },
+                onEachFeature: function (feature, layer) {
+        layer.bindPopup(feature.properties.AGENCY+" Bus Route "+feature.properties.ROUTE_NUMBER);
+        }
+        }}).addTo(map);
+        });
+    
 //Loads Markers from Google Sheets        
         $.getJSON(landmarks, function(data) {
         $.each(data.feed.entry, function(i,result){
@@ -44,6 +85,7 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
                 }
         }).addTo(map);
         });
+    
 //Adds City Boundary Polyline
         $.getJSON(city, function(data) {
         var city = L.geoJson(data, {
@@ -55,8 +97,11 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
                 }
         }).addTo(map);
         });    
-    
-       
+//Add image overlay
+var imageURL='images/floatlabel-05.png', imageBounds =[[34.145500,-118.147236],[34.141806,-118.121470]];
+L.imageOverlay(imageURL,imageBounds,{opacity:.5}).addTo(map);
+ 
+
 //Popup to infobox    
     landmarkslayer.on('click',function(e) {
     e.layer.closePopup();    
