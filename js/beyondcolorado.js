@@ -15,19 +15,12 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
         var pasaODH='http://cityofpasadenaca.pasgis.opendata.arcgis.com/datasets/9f855c1de8af4fac94010719308978f2_0.geojson'
         var busroutes='http://cityofpasadenaca.pasgis.opendata.arcgis.com/datasets/242631d212c24bbfbd62e0138bfa1fa6_0.geojson';
         
-//Function to return fill color    
-function getcolor(d) {
+//Function to return fill color for list    
+        function getcolor(d) {
             var d = String(d);
             return d == 'Current' ? '#DA8A29' :
                 '#F05B7A';
         }
-//Function to return fill color    
-function getopacity(d) {
-            var d = String(d);
-            return d == 'Pasadena ARTS' ? 1 :
-                0;
-        }
-    
 //Adds Landmarks from Pasadena Open Data
         $.getJSON(pasaODH, function(data) {
         var pasa = L.geoJson(data, {
@@ -49,15 +42,12 @@ function getopacity(d) {
                 style:{
                 color: "aqua",
                 weight: 2,
-                opacity:1,
-                filter: function(feature, layer) {
-                return feature.properties.AGENCY=="Pasadena ARTS";
-                console.log(feature);
+                opacity:.1
                 },
-                onEachFeature: function (feature, layer) {
+        onEachFeature: function (feature, layer) {
         layer.bindPopup(feature.properties.AGENCY+" Bus Route "+feature.properties.ROUTE_NUMBER);
         }
-        }}).addTo(map);
+        }).addTo(map);
         });
     
 //Loads Markers from Google Sheets        
@@ -85,7 +75,6 @@ function getopacity(d) {
                 }
         }).addTo(map);
         });
-    
 //Adds City Boundary Polyline
         $.getJSON(city, function(data) {
         var city = L.geoJson(data, {
