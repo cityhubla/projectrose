@@ -2,7 +2,7 @@ $(document).ready(function() {
     
 //Loads Map    
 L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7QQMRafKPNBdmA';    
-        var map = L.mapbox.map('map', 'cruzin73vw.da0b9375',{minZoom:14, maxZoom:18})
+        var map = L.mapbox.map('map', 'mapbox.dark',{minZoom:14, maxZoom:18})
         .setView([34.147844, -118.144392], 15);        
         L.mapbox.tileLayer('cruzin73vw.beyondblvd',{opacity:.2}).addTo(map);
     
