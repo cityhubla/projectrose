@@ -2,12 +2,12 @@ $(document).ready(function() {
     
 //Loads Map    
 L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7QQMRafKPNBdmA';    
-        var map = L.mapbox.map('map', 'mapbox.light',{minZoom:14, maxZoom:18})
+        var map = L.mapbox.map('map', 'cruzin73vw.da0b9375',{minZoom:14, maxZoom:18})
         .setView([34.147844, -118.144392], 15);        
-        L.mapbox.tileLayer('cruzin73vw.beyondblvd',{opacity:.5}).addTo(map);
+        L.mapbox.tileLayer('cruzin73vw.beyondblvd',{opacity:.2}).addTo(map);
     
         //URL to Markers
-        var landmarks="https://spreadsheets.google.com/feeds/list/1vmu7PZ6VeQIoEsggsH7t8erMnYPLUT4EBHR72vGylpA/1/public/values?alt=json";
+        var landmarks="https://spreadsheets.google.com/feeds/list/1u2b7ROtyt3_47Ah48ejiG5ALz0Z0Zfvo4RfdfTzboHQ/1/public/values?alt=json";
         var landmarkslayer = L.mapbox.featureLayer().addTo(map);
         var info = document.getElementById('infobox');
         var blvd ='data/coloradoblvd.geojson';
@@ -18,15 +18,15 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
 //Function to return fill color for list    
         function getcolor(d) {
             var d = String(d);
-            return d == 'Current' ? '#F05B7A' :
-                '#566272';
+            return d == 'Current' ? '#DA8A29' :
+                '#F05B7A';
         }
 //Adds Landmarks from Pasadena Open Data
         $.getJSON(pasaODH, function(data) {
         var pasa = L.geoJson(data, {
                 style:{
-                color: "#566272",
-                fill: "#566272",
+                color: "#DA8A29",
+                fill: "#DA8A29",
                 fillOpacity:.5,
                 weight: 0,
                 },
@@ -53,12 +53,12 @@ L.mapbox.accessToken = 'pk.eyJ1IjoiY3J1emluNzN2dyIsImEiOiI3RDdhUi1NIn0.jaEqREZw7
 //Loads Markers from Google Sheets        
         $.getJSON(landmarks, function(data) {
         $.each(data.feed.entry, function(i,result){
-        L.circle([result.gsx$latitude.$t, result.gsx$longitude.$t], 30, {
+        L.circle([result.gsx$latitude.$t, result.gsx$longitude.$t], 20, {
                 fillColor:getcolor(result.gsx$status.$t),
-                color: "#F05B7A",
-                weight: 2,
-                opacity: .75,
-                fillOpacity: .5
+                color: "#000",
+                weight: 0,
+                opacity: 0,
+                fillOpacity: 0.8
         }).bindPopup('<img src="http://maps.googleapis.com/maps/api/streetview?size=400x200&location='+result.gsx$latitude.$t+','+result.gsx$longitude.$t+'&key=AIzaSyAEjGc0IbjncA-YzKrpiTBHRhELUrruHao", width="100%">'+
                      "<h2>"+result.gsx$name.$t+"<br>"+result.gsx$address.$t+"</h2><p>"+result.gsx$description.$t,{autoPan:false}).addTo(landmarkslayer);
         });
